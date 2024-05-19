@@ -1,27 +1,123 @@
 @startuml
 'https://plantuml.com/class-diagram
+skinparam classAttributeIconSize 0
 
-abstract class AbstractList
-abstract AbstractCollection
-interface List
-interface Collection
+package ServerHandler{
+    package search_engine{
+        package news_api{
+            class NewsCaller <<NewsApiClient>>{
+            - Object articles
+            + Array<HashTable> get_single_article_details(int article_id)
+            }
+        }
+        interface SearchEngine{
+        - void verbose(int mode)
+        + Array<Hashtable> search(String query, int top_k, int verbose)
+        }
+        note left of SearchEngine::verbose
+          For debug only
+        end note
 
-List <|-- AbstractList
-Collection <|-- AbstractCollection
+        class SearchEngine1{
+        - DataFrame data
+        - SentenceTransformer model
+        - TfidfVectorizer tfidf_vectorizer
+        - SPMatrix tfidf_matrix
+        --
+        + SearchEngine1(String data_path)
+        + SearchEngine1(DataFrame database)
+        }
 
-Collection <|- List
-AbstractCollection <|- AbstractList
-AbstractList <|-- ArrayList
+        class SearchEngine2{
+        - String language
+        - String sort_by
+        + SearchEngine2(String language, String sort_by)
+        }
 
-class ArrayList {
-Object[] elementData
-size()
+
+    }
+
+    class SocketServer <<Socket>>{
+    - SearchEngine SE
+    - int page_size = 10
+    - Array<Socket> clients = []
+    - Array<String> nicknames = []
+    + void start(String ip, int port, int max_connection)
+    + Array<String> get_search_result(String query)
+    - void handle(Socket client)
+    - void receive()
+    }
+
+    SocketServer o--> SearchEngine
+    SearchEngine <|.. SearchEngine1
+    SearchEngine <|.. SearchEngine2
+    SearchEngine2 *--> NewsCaller
 }
 
-enum TimeUnit {
-DAYS
-HOURS
-MINUTES
-}
+package OOP_Project{
+    package ClientHandler{
+        class SocketClient <<Socket>>{
+        - DataInputStream din
+        - DataOutputStream dout
+        - String nickname
+        - boolean refresh = false
+        --
+        + SocketClient(String ip, int port)
+        + void close()
+        - String getComputerName()
+        + void sendMessageToServer(String messageToServer)
+        - void receiveMessageFromServer()
+        }
+    }
+    package Controller{
+        package Display{
+            class DetailController{
+            + void addArticles(ArrayList<String[]> news_inputs, VBox articleContainer, String[] display)
+            + void addArticles(String[][] news_inputs, VBox articleContainer, String[] display)
+            + boolean transpose(boolean init)
+            + void setDetail(String title, String type, String news, String summary, String category, String tag, String time, String url, String image)
+            }
+        }
+        package Storage{
+            class DataController{
+            - {static} String[][] inputs = {...}
+            - {static} ArrayList<String[]> Later = new ArrayList<>()
+            --
+            ~ {static} String[] init = {...}
+            + {static} boolean containsStringArray(String[] arrayToCheck)
+            }
+        }
+        package Visualization{
+            class ReadLaterController{
+            + {static} ArrayList<String[]> news_inputs = DataController.getRead()
+            ~ {static} String[] init = {"Welcome to our ReadLater...}
+            --
+            + void initialize()
+            + void addreadlater()
+            }
+        }
+    }
+    package Media{
+        class NewsArticle{
+        - String title
+        - String type
+        - String news
+        - String summary
+        - String category
+        - String tags
+        - String publishDate
+        - String link
+        - String img_url
+        + NewsArticle()
+        + NewsArticle(String jsonString)
+        + String[] toArray()
+        }
+    }
 
+    class App <<Application>>{
+    + void start(Stage stage)
+    + {static} void main(String[] args)
+    }
+
+}
 @enduml
