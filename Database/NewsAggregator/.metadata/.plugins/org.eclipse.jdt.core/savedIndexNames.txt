@@ -1,0 +1,2 @@
+INDEX VERSION 1.134+/Users/xuanthanhnguyen/Library/CloudStorage/OneDrive-HanoiUniversityofScienceandTechnology/2023-2/O-OP/Blockchain_local/.metadata/.plugins/org.eclipse.jdt.core
+1865797976.index
