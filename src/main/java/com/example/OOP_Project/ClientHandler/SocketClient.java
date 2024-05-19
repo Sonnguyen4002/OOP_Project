@@ -6,8 +6,8 @@ import java.util.Map;
 
 import com.example.OOP_Project.Controller.Visualization.TodayController;
 
-public class SocketClient {
-    private Socket socket;
+public class SocketClient extends Socket {
+    // private Socket socket;
     private DataInputStream din;
     private DataOutputStream dout;
     private String nickname = getComputerName();
@@ -31,31 +31,21 @@ public class SocketClient {
             return "Unknown";
     }
 
-    public SocketClient(Socket socket) {
-        try {
-            this.socket = socket;
-            this.din = new DataInputStream(socket.getInputStream());
-            this.dout = new DataOutputStream(socket.getOutputStream());
-            receiveMessageFromServer();
-        } catch (IOException e) {
-            System.out.println("Error creating client");
-            e.printStackTrace();
-            close();
-        }
-
+    public SocketClient(String ip, int port) throws IOException {
+        super(ip, port);
+        this.din = new DataInputStream(getInputStream());
+        this.dout = new DataOutputStream(getOutputStream());
+        receiveMessageFromServer();
     }
 
+    @Override
     public void close() {
         try {
-            if (din != null) {
+            if (din != null)
                 din.close();
-            }
-            if (dout != null) {
+            if (dout != null)
                 dout.close();
-            }
-            if (socket != null) {
-                socket.close();
-            }
+            super.close();
         } catch (IOException e) {
             // Ignore
         }
@@ -76,7 +66,7 @@ public class SocketClient {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                while (socket.isConnected()) {
+                while (isConnected()) {
                     try {
                         String messageFromServer = din.readUTF();
                         if (messageFromServer.equals("-nick")) {
@@ -91,6 +81,7 @@ public class SocketClient {
                             int pos = Integer.parseInt(messageFromServer.substring(s1 + 1, s2));
                             String jsonString = messageFromServer.substring(s2 + 1);
                             TodayController.addSearchResult(pos, jsonString);
+                            TodayController.addSearchResult_storage(pos, jsonString);
                         } else if (messageFromServer.indexOf("-refresh") == 0) {
                             setRefreshStatus(true);
                             System.out.println("Refresh set: " + refresh);
@@ -109,7 +100,7 @@ public class SocketClient {
 
     public static void main(String[] args) {
         try {
-            SocketClient client = new SocketClient(new Socket("127.0.0.1", 8888));
+            SocketClient client = new SocketClient("127.0.0.1", 8888);
         } catch (Exception e) {
         }
     }

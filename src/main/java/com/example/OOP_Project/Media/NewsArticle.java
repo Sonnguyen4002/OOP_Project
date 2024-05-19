@@ -33,11 +33,10 @@ public class NewsArticle {
             link = (String) data.get("link");
             img_url = (String) data.get("image");
         } catch (Exception e) {
-
         }
     }
 
     public String[] toArray() {
-        return new String[] { title, type, news, summary, category, tags, publishDate, link, img_url };
+        return new String[] { title, type, category, summary, news, tags, publishDate, link, img_url };
     }
 }

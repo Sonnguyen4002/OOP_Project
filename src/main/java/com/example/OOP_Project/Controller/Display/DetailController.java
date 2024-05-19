@@ -1,4 +1,4 @@
-package com.example.OOP_Project.Controller.DataManagement;
+package com.example.OOP_Project.Controller.Display;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -10,14 +10,17 @@ import javafx.scene.layout.AnchorPane;
 
 public class DetailController {
 
+    @FXML
+    private AnchorPane detail;
 
-    @FXML private AnchorPane detail;
     public void hideDetail() {
         detail.setVisible(false);
     }
+
     public void showDetail() {
         detail.setVisible(true);
     }
+
     @FXML
     private ImageView img_detail;
 
@@ -43,6 +46,7 @@ public class DetailController {
 
     @FXML
     private Button link_detail;
+
     @FXML
     private void openLink(String url) {
         // Xử lý sự kiện khi nút được nhấn
@@ -66,7 +70,8 @@ public class DetailController {
         img_detail.setImage(image);
     }
 
-    public void setDetail(String title, String type, String news, String summary, String category, String tag, String time, String url, String image) {
+    public void setDetail(String title, String type, String news, String summary, String category, String tag,
+            String time, String url, String image) {
         title_detail.setText(title);
         type_detail.setText(type);
         news_detail.setText(news);
@@ -77,7 +82,5 @@ public class DetailController {
         openLink(url);
         openImage(image);
     }
-
-
 
 }

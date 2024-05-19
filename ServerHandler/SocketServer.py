@@ -1,19 +1,13 @@
 import socket
+from threading import Thread
 import json
 import pandas as pd
-from threading import Thread
-from BlockchainDB import *
-from OOPEngine import SearchEngine
-from RetrieverPipeline import RetrieverPipeline
-from IndexPipeline import IndexPipeline
-from haystack.document_stores.in_memory import InMemoryDocumentStore
-
-import newsapi_top100 as api_caller
+from search_engine import SearchEngine
+from search_engine import SearchEngine1, SearchEngine2
 
 # Typing
 Socket = socket.socket
 DataFrame = pd.DataFrame
-
 
 IP = "127.0.0.1"
 PORT = 8888
@@ -22,14 +16,14 @@ ENCODING = "utf-8"
 MAX_CONNECTION = 5
 
 
-# Message handler
+# Encoding and decoding message
 def encode_message(msg: str) -> bytes:
     msg_length = len(msg).to_bytes(BUFFER_SIZE)
     bytes_msg = msg_length + msg.encode("utf-8")
     return bytes_msg
 
 
-def decode_message(bytes_msg: bytes):
+def decode_message(bytes_msg: bytes) -> str:
     msg = bytes_msg.decode(ENCODING)
     return msg
 
@@ -47,92 +41,36 @@ def receive_message(client: Socket) -> str:
     return msg
 
 
-class SocketServer:
+class SocketServer(Socket):
     def __init__(self) -> None:
         # Database
-        self.database_path: str
-        self.database: DataFrame
+        self.database_path: str | None
+        self.database: DataFrame | None
         # Search engine
-        self.SE: SearchEngine
-        self.caller = api_caller
-        # Socket
-        self.server: Socket | None = None
+        self.SE: SearchEngine = None
+        # Search settings
+        self.page_size = 10
+        # Socket clients
         self.clients: list[Socket] = []
         self.nicknames: list[str] = []
 
-    def close_server(self) -> None:
-        if self.server is not None:
-            try:
-                self.server.close()
-            except Exception:
-                print("Error while trying to close server")
+    def set_search_engine(self, se):
+        self.SE = se
 
-    def start_server(self, ip: str, port: int, max_connection=5) -> None:
-        self.close_server()
-        server = Socket(socket.AF_INET, socket.SOCK_STREAM)
-        server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True)
-        server.bind((ip, port))
-        server.listen(max_connection)
-        self.server = server
+    def start(self, ip: str, port: int, max_connection=5) -> None:
+        if self.SE is None:
+            raise Exception("No search engine is initialized.")
+        super().__init__(socket.AF_INET, socket.SOCK_STREAM)
+        self.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True)
+        self.bind((ip, port))
+        self.listen(max_connection)
         print(f"Server started at {ip} on port {port}")
         self._receive()
 
-    def set_database(self, path: str):
-        self.database_path = path
-        self.database = pd.read_csv(path)
-        self.SE_database = ExcelDB("Database/database.csv")
-        self.SE_database.process_data(20) ## number of considered articles
-        print(f"Database loaded from {path}")
-
-    def set_searchEngine(self):
-        index = IndexPipeline(
-            docEmbedderModel = "sentence-transformers/all-MiniLM-L6-v2", 
-            docs = self.SE_database.getAllArticles(), 
-            documentStore = InMemoryDocumentStore()
-            )
-        
-        index.execute()
-        index.draw("indexing_pipeline.png")
-
-        retrieve = RetrieverPipeline(textEmbedderModel = "sentence-transformers/all-MiniLM-L6-v2", 
-                                        rankModel = "BAAI/bge-reranker-base", 
-                                        embeddedDocumentStore = index.getDocumentStore()
-                                        )
-        
-        self.SE = SearchEngine(retrieve)
-        self.SE.execute_pipeline()
-
-        retrieve.draw("retrieval_pipeline.png")
-
-
-    def search(self, query: str):
-        # engine = self.SE.search(query, 10)
-        results = self.SE_database.getIndex(self.SE.filter(self.SE.search(query)), 10)
-        search_items = [
-            json.dumps(
-                self.database.iloc[idx].fillna("null").to_dict(), allow_nan=False
-            )
-            for idx in results
-        ]
-        print(self.database.iloc[2].fillna("null"))
+    def get_search_result(self, query: str):
+        results = self.SE.search(query, 10)
+        search_items = [json.dumps(res, allow_nan=False) for res in results]
         return search_items
-    
-    def call(self, query: str):
-        caller = api_caller.NewsCaller(query, sort_by = 'publishedAt', page_size = 10)
-        called_items = [
-            json.dumps(
-                caller.get_single_article_details(idx)
-            )
-            for idx in range (caller.page_size)
-        ]
-        return called_items
-               
-
-    def get_search_result(self, message: str):
-        if message[0] == "1":
-            return self.search(query = message[2:])
-        if message[0] == "2":
-            return self.call(query = message[2:])
 
     def _handle(self, client: Socket):
         while True:
@@ -152,14 +90,14 @@ class SocketServer:
             except Exception as e:
                 print(e)
                 self.clients.remove(client)
-                client.close()
                 self.nicknames.remove(nickname)
+                client.close()
                 break
 
     def _receive(self):
         while True:
             # Accepting a client connection
-            client, address = self.server.accept()
+            client, address = self.accept()
             print(f"New connection from {address[0]}:{address[1]}")
 
             # Get client's nickname
@@ -176,6 +114,18 @@ class SocketServer:
 
 if __name__ == "__main__":
     server = SocketServer()
-    server.set_database("./Database/database.csv")
-    server.set_searchEngine()
-    server.start_server(IP, PORT)
+    print(
+        """Please select a search engine:
+    1: SearchEngine1 - sklearn text processing with local database
+    2: SearchEngine2 - newsapi with quick search time, no local database"""
+    )
+    num_input = int(input("Input corresponding number: "))
+    match num_input:
+        case 1:
+            database = pd.read_csv(
+                "./Database/news_change_delimiter.csv", delimiter="::", engine="python"
+            )
+            server.set_search_engine(SearchEngine1(database))
+        case 2:
+            server.set_search_engine(SearchEngine2())
+    server.start(IP, PORT)

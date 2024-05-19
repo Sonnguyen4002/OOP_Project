@@ -1,4 +1,4 @@
-package com.example.OOP_Project.Controller.DataManagement;
+package com.example.OOP_Project.Controller.Storage;
 // Articles
 
 import java.util.ArrayList;
@@ -26,6 +26,7 @@ public class DataController {
         { "Title 10", "Type 10", "News 10", "Summary 10", "Category 10", "Tag 10", "Time 10",
                 "https://www.facebook.com/", "https://www.w3schools.com/images/w3schools_logo_436_2.png"}
 };
+
 private static ArrayList<String[]> Later = new ArrayList<>();
 public static boolean containsStringArray(String[] arrayToCheck) {
     for (String[] array : Later) {

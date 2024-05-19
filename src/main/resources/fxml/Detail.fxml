@@ -14,37 +14,37 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="detail" prefHeight="700.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.OOP_Project.Controller.DataManagement.DetailController">
+            fx:controller="com.example.OOP_Project.Controller.Display.DetailController">
 
         <Pane  prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: white; -fx-opacity: 0.4;" />
         <ScrollPane hbarPolicy="NEVER" layoutX="150.0" layoutY="150.0" prefHeight="400.0" prefWidth="700.0" vbarPolicy="NEVER">
             <content>
                 <Pane prefWidth="700.0" style="-fx-background-color: #1b002e;">
-                    <ImageView fx:id="img_detail" fitHeight="300.0" fitWidth="750.0" layoutX="100.0" layoutY="264.0" pickOnBounds="true" preserveRatio="true">
+                    <ImageView fx:id="img_detail" fitHeight="300.0" fitWidth="750.0" layoutX="60.0" layoutY="264.0" pickOnBounds="true" preserveRatio="true">
 
                     </ImageView>
-                    <Label fx:id="title_detail" alignment="TOP_LEFT" layoutX="100.0" layoutY="34.0" prefHeight="91.0" prefWidth="486.0" text="Google goes all in on generative AI at Google Cloud Next nexxxx" textFill="WHITE" wrapText="true">
+                    <Label fx:id="title_detail" alignment="TOP_LEFT" layoutX="60.0" layoutY="34.0" prefHeight="91.0" prefWidth="486.0" text="Google goes all in on generative AI at Google Cloud Next nexxxx" textFill="WHITE" wrapText="true">
                         <font>
                             <Font name="System Bold" size="30.0" />
                         </font>
                     </Label>
-                    <Label fx:id="type_detail" layoutX="101.0" layoutY="129.0" prefHeight="20.0" prefWidth="326.0" text="LMio enables cross-platform collaborationabel" textFill="#d13d91">
+                    <Label fx:id="type_detail" layoutX="60.0" layoutY="129.0" prefHeight="20.0" prefWidth="326.0" text="LMio enables cross-platform collaborationabel" textFill="#d13d91">
                         <font>
                             <Font size="14.0" />
                         </font>
                     </Label>
-                    <Label fx:id="news_detail" layoutX="436.0" layoutY="129.0" prefHeight="20.0" prefWidth="136.0" text="TechCrunch" textFill="#c762cf">
+                    <Label fx:id="news_detail" layoutX="400.0" layoutY="129.0" prefHeight="20.0" prefWidth="200.0" text="TechCrunch" textFill="#c762cf">
                         <font>
                             <Font name="System Bold" size="14.0" />
                         </font>
                     </Label>
-                    <Label fx:id="time_detail" layoutX="101.0" layoutY="155.0" text="Date: 04/04/2024" textFill="WHITE">
+                    <Label fx:id="time_detail" layoutX="60.0" layoutY="155.0" text="Date: 04/04/2024" textFill="WHITE">
                         <font>
                             <Font size="14.0" />
                         </font>
                     </Label>
-                    <Label fx:id="category_detail" layoutX="101.0" layoutY="184.0" text="Type: Article" textFill="WHITE" />
-                    <Label fx:id="tag_detail" alignment="TOP_LEFT" layoutX="101.0" layoutY="209.0" prefHeight="38.0" prefWidth="470.0" text="Tag: Blockchain, ElonMusk, Mark Zugg, ..." textFill="WHITE" />
+                    <Label fx:id="category_detail" layoutX="60.0" layoutY="184.0" prefWidth="550.0" wrapText="true"  prefHeight="35.0" text="Type: Article" textFill="WHITE" />
+                    <Label fx:id="tag_detail" alignment="TOP_LEFT" layoutX="60.0" layoutY="225.0" prefHeight="38.0" prefWidth="470.0" text="Tag: Blockchain, ElonMusk, Mark Zugg, ..." textFill="WHITE" />
                     <Button layoutX="629.0" layoutY="14.0" mnemonicParsing="false" onAction="#hideDetail" prefHeight="44.0" prefWidth="57.0" style="-fx-background-color: #160042;" textFill="WHITE">
                         <graphic>
                             <ImageView fitHeight="38.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
@@ -72,7 +72,7 @@
                             <Font name="System Bold" size="22.0" />
                         </font>
                     </Button>
-                    <Label fx:id="summary_detail" alignment="TOP_LEFT" layoutX="100.0" layoutY="600.0" prefHeight="150.0" prefWidth="470.0" text=" Not to minimize what Google had on display, but the company failed to give all but a passing nod to its core business — except in the context of generative AI, of course. © 2024 TechCrunch. All rights reserved. For personal use only. " textFill="WHITE" wrapText="true" />
+                    <Label fx:id="summary_detail" alignment="TOP_LEFT" layoutX="60.0" layoutY="600.0" prefHeight="150.0" prefWidth="470.0" text=" Not to minimize what Google had on display, but the company failed to give all but a passing nod to its core business — except in the context of generative AI, of course. © 2024 TechCrunch. All rights reserved. For personal use only. " textFill="WHITE" wrapText="true" />
                     <Pane layoutY="850.0" prefHeight="10" />
                 </Pane>
             </content>
