@@ -1,6 +1,6 @@
 import sys
 
-sys.path.append("./ServerHandler/search_engine")
+sys.path.append("./src/main/python/ServerHandler/search_engine")
 
 from .se_interface import SearchEngine
 from .search_engine_1 import SearchEngine1

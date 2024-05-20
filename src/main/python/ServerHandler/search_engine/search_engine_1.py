@@ -17,12 +17,12 @@ class SearchEngine1(SearchEngine):
     """Search engine that uses sklearn library text processing."""
 
     def __init__(self, database: str | DataFrame):
-        self.data = self.import_database(database)
-        self.model = SentenceTransformer("paraphrase-MiniLM-L6-v2")
-        self.tfidf_vectorizer = TfidfVectorizer()
-        self.tfidf_matrix = self._calculate_tfidf_matrix()
+        self._data = self._import_database(database)
+        self._model = SentenceTransformer("paraphrase-MiniLM-L6-v2")
+        self._tfidf_vectorizer = TfidfVectorizer()
+        self._tfidf_matrix = self._calculate_tfidf_matrix()
 
-    def import_database(self, database: str | DataFrame) -> DataFrame:
+    def _import_database(self, database: str | DataFrame) -> DataFrame:
         if isinstance(database, str):
             print(f"Loading data base from {database}")
             return pd.read_csv("./Database/database.csv")
@@ -31,7 +31,9 @@ class SearchEngine1(SearchEngine):
             return database
 
     def _calculate_tfidf_matrix(self):
-        tfidf_matrix = self.tfidf_vectorizer.fit_transform(self.data["content"].values)
+        tfidf_matrix = self._tfidf_vectorizer.fit_transform(
+            self._data["content"].values
+        )
         return tfidf_matrix
 
     def _verbose(
@@ -54,15 +56,15 @@ class SearchEngine1(SearchEngine):
             pprint(item_dict)
 
     def search(self, query: str, top_k=5, verbose: Literal[0, 1, 2] = 0) -> list[dict]:
-        query_embedding = self.model.encode([query])[0]
-        query_tfidf = self.tfidf_vectorizer.transform([query])
-        tfidf_similarity = cosine_similarity(query_tfidf, self.tfidf_matrix)[0]
+        query_embedding = self._model.encode([query])[0]
+        query_tfidf = self._tfidf_vectorizer.transform([query])
+        tfidf_similarity = cosine_similarity(query_tfidf, self._tfidf_matrix)[0]
         semantic_similarity = cosine_similarity(
-            [query_embedding], self.model.encode(self.data["content"].values)
+            [query_embedding], self._model.encode(self._data["content"].values)
         )[0]
         combined_similarity = 0.5 * tfidf_similarity + 0.5 * semantic_similarity
         indices = np.argsort(combined_similarity)[-top_k:][::-1]
-        results = [self.data.iloc[idx].fillna("null").to_dict() for idx in indices]
+        results = [self._data.iloc[idx].fillna("null").to_dict() for idx in indices]
         self._verbose(verbose, indices, combined_similarity, results)
         return results
 

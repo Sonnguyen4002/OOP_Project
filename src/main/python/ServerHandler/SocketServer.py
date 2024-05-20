@@ -43,22 +43,19 @@ def receive_message(client: Socket) -> str:
 
 class SocketServer(Socket):
     def __init__(self) -> None:
-        # Database
-        self.database_path: str | None
-        self.database: DataFrame | None
         # Search engine
-        self.SE: SearchEngine = None
+        self._SE: SearchEngine = None
         # Search settings
-        self.page_size = 10
+        self._page_size = 10
         # Socket clients
-        self.clients: list[Socket] = []
-        self.nicknames: list[str] = []
+        self._clients: list[Socket] = []
+        self._nicknames: list[str] = []
 
     def set_search_engine(self, se):
-        self.SE = se
+        self._SE = se
 
     def start(self, ip: str, port: int, max_connection=5) -> None:
-        if self.SE is None:
+        if self._SE is None:
             raise Exception("No search engine is initialized.")
         super().__init__(socket.AF_INET, socket.SOCK_STREAM)
         self.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, True)
@@ -67,15 +64,15 @@ class SocketServer(Socket):
         print(f"Server started at {ip} on port {port}")
         self._receive()
 
-    def get_search_result(self, query: str):
-        results = self.SE.search(query, 10)
+    def get_search_result(self, query: str) -> list[str]:
+        results = self._SE.search(query, self._page_size)
         search_items = [json.dumps(res, allow_nan=False) for res in results]
         return search_items
 
     def _handle(self, client: Socket):
         while True:
-            index = self.clients.index(client)
-            nickname = self.nicknames[index]
+            index = self._clients.index(client)
+            nickname = self._nicknames[index]
             try:
                 message = receive_message(client)
                 client_input = message[message.find(":") + 1 :].strip()
@@ -89,8 +86,8 @@ class SocketServer(Socket):
                 send_message(client, "-refresh")
             except Exception as e:
                 print(e)
-                self.clients.remove(client)
-                self.nicknames.remove(nickname)
+                self._clients.remove(client)
+                self._nicknames.remove(nickname)
                 client.close()
                 break
 
@@ -103,8 +100,8 @@ class SocketServer(Socket):
             # Get client's nickname
             send_message(client, "-nick")
             nickname = receive_message(client)
-            self.nicknames.append(nickname)
-            self.clients.append(client)
+            self._nicknames.append(nickname)
+            self._clients.append(client)
             print(f"Nickname of client is {nickname}")
 
             # Start a seperate thread to handle the client

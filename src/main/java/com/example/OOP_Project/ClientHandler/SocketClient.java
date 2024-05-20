@@ -7,7 +7,6 @@ import java.util.Map;
 import com.example.OOP_Project.Controller.Visualization.TodayController;
 
 public class SocketClient extends Socket {
-    // private Socket socket;
     private DataInputStream din;
     private DataOutputStream dout;
     private String nickname = getComputerName();
