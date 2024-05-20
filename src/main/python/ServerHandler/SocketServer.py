@@ -3,7 +3,10 @@ from threading import Thread
 import json
 import pandas as pd
 from search_engine import SearchEngine
-from search_engine import SearchEngine1, SearchEngine2
+from search_engine import SearchEngine1, SearchEngine2, SearchEngine3
+
+from search_engine import blockchain_db, pipeline
+from haystack.document_stores.in_memory import InMemoryDocumentStore
 
 # Typing
 Socket = socket.socket
@@ -114,7 +117,8 @@ if __name__ == "__main__":
     print(
         """Please select a search engine:
     1: SearchEngine1 - sklearn text processing with local database
-    2: SearchEngine2 - newsapi with quick search time, no local database"""
+    2: SearchEngine2 - newsapi with quick search time, no local database
+    3: SearchEngine3 - Haystack Pipeline with local database"""
     )
     num_input = int(input("Input corresponding number: "))
     match num_input:
@@ -122,7 +126,25 @@ if __name__ == "__main__":
             database = pd.read_csv(
                 "./Database/news_change_delimiter.csv", delimiter="::", engine="python"
             )
+
             server.set_search_engine(SearchEngine1(database))
         case 2:
             server.set_search_engine(SearchEngine2())
+        case 3:
+            my_db = blockchain_db.ExcelDB("./Database/news_change_delimiter.csv")
+            my_db.process_data(delimiter = "::", engine = "python")
+
+            index = pipeline.IndexPipeline(docEmbedderModel= "sentence-transformers/all-MiniLM-L6-v2",
+                                           docs = my_db.getAllArticles,
+                                           documentStore= InMemoryDocumentStore()
+                                           )
+
+            index.execute()
+
+            retrieve = pipeline.RetrieverPipeline(textEmbedderModel = "sentence-transformers/all-MiniLM-L6-v2",
+                                                  rankModel= "BAAI/bge-reranker-base",
+                                                  embeddedDocumentStore = index.getDocumentStore()
+                                                  )
+
+            server.set_search_engine(SearchEngine3(retrievePipeline= retrieve))
     server.start(IP, PORT)
