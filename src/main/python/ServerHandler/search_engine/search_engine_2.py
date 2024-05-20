@@ -13,8 +13,8 @@ class SearchEngine2(SearchEngine):
         language="en",
         sort_by: Literal["relevancy", "popularity", "publishedAt"] = "publishedAt",
     ):
-        self._language = language
-        self._sort_by = sort_by
+        self.__language = language
+        self.__sort_by = sort_by
 
     def _verbose(self, mode: int, results: Iterable[dict]) -> None:
         if mode == 0:
@@ -29,7 +29,7 @@ class SearchEngine2(SearchEngine):
         print(res.keys())
 
     def search(self, query: str, top_k=5, verbose: Literal[0, 1] = 0):
-        caller = NewsCaller(query, self._language, self._sort_by, top_k)
+        caller = NewsCaller(query, self.__language, self.__sort_by, top_k)
         print(len(caller.get_articles()))
         results = [caller.get_single_article_details(idx) for idx in range(top_k)]
         self._verbose(verbose, results)
