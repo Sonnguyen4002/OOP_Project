@@ -28,13 +28,8 @@ class SearchEngine2(SearchEngine):
             pprint(item_dict)
         print(res.keys())
 
-<<<<<<< HEAD
-    def search(self, query: str, top_k=5, verbose: Literal[0, 1] = 0):
-        caller = NewsCaller(query, self.__language, self.__sort_by, top_k)
-=======
     def search(self, query: str, top_k=5, verbose: Literal[0, 1] = 0) -> list[dict]:
-        caller = NewsCaller(query, self._language, self._sort_by, top_k)
->>>>>>> b7859267b040b3bce2db3933dcedd6649d40fcc2
+        caller = NewsCaller(query, self.__language, self.__sort_by, top_k)
         print(len(caller.get_articles()))
         results = [caller.get_single_article_details(idx) for idx in range(top_k)]
         self._verbose(verbose, results)
