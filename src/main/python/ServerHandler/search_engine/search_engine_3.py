@@ -15,13 +15,12 @@ class SearchEngine3(SearchEngine):
         if mode == 0:
             return
         for res in results:
-            pprint(res)
-            # item_dict = {
-            #     "id": res["id"],
-            #     "content": res["content"][:25] + "...",
-            #     "publishDate": res["publishDate"],
-            # }
-            # pprint(item_dict)
+            item_dict = {
+                "id": res["id"],
+                "content": res["content"][:25] + "...",
+                "publishDate": res["publishDate"],
+            }
+            pprint(item_dict)
         print(res.keys())
 
     def search(self, query: str, top_k=5, verbose: Literal[0, 1] = 0):
@@ -39,8 +38,9 @@ class SearchEngine3(SearchEngine):
         process = [doc.meta for doc in origin]
         for i in range(top_k):
             del process[i]["source_id"]
-            stuff = list(process[i].items())
+            stuff = list(process[i].items())[:-1]
             stuff.insert(0, ("id", origin[i].id))
+            stuff.insert(1, ("content", origin[i].content))
             new_doc_meta = dict(stuff)
             results.append(new_doc_meta)
         self._verbose(verbose, results)
