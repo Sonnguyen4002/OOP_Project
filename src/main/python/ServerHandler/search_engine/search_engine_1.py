@@ -54,6 +54,7 @@ class SearchEngine1(SearchEngine):
             if mode == 2:
                 item_dict.update({"similarity": combined_similarity[idx]})
             pprint(item_dict)
+        print(res.keys())
 
     def search(self, query: str, top_k=5, verbose: Literal[0, 1, 2] = 0) -> list[dict]:
         query_embedding = self._model.encode([query])[0]
