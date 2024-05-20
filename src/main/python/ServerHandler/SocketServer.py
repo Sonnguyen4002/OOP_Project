@@ -135,7 +135,7 @@ if __name__ == "__main__":
             my_db.process_data(delimiter = "::", engine = "python")
 
             index = pipeline.IndexPipeline(docEmbedderModel= "sentence-transformers/all-MiniLM-L6-v2",
-                                           docs = my_db.getAllArticles,
+                                           docs = my_db.getAllArticles(),
                                            documentStore= InMemoryDocumentStore()
                                            )
 
