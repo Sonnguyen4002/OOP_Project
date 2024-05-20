@@ -21,6 +21,8 @@ def fillnan(atts: dict) -> None:
 class SearchEngine3(SearchEngine):
     def __init__(self, retrievePipeline: RetrieverPipeline):
         self.__retrievePipeline = retrievePipeline
+        # Execute this one time only
+        self.__retrievePipeline.execute()
 
     def _verbose(self, mode: int, results: Iterable[dict]) -> None:
         if mode == 0:
@@ -35,8 +37,6 @@ class SearchEngine3(SearchEngine):
         print(res.keys())
 
     def search(self, query: str, top_k=5, verbose: Literal[0, 1] = 0):
-        self.__retrievePipeline.execute()
-
         output = self.__retrievePipeline.run(
             {
                 "text_embedder": {"text": query},
