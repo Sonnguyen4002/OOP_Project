@@ -62,10 +62,3 @@ class ExcelDB(BlockchainDB):
             for i in range(df.shape[0])
         ]
         self.setDocs(new_docs)
-
-
-if __name__ == "__main__":
-    my_db = ExcelDB("./Database/news_change_delimiter.csv")
-    my_db.process_data(delimiter="::", engine="python")
-    a: Document = my_db.getAllArticles()[0]
-    print(a.)

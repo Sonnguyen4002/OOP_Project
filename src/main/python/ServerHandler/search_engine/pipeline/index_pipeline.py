@@ -1,3 +1,4 @@
+import torch
 from haystack import Pipeline
 from haystack.utils import ComponentDevice, Device
 from haystack.components.writers import DocumentWriter
@@ -25,8 +26,9 @@ class IndexPipeline(Pipeline):
         document_embedder = SentenceTransformersDocumentEmbedder(
             model=self.__docEmbedderModel,
             batch_size=5,
-            # device=ComponentDevice.from_str("cuda: 0"),
-            device=ComponentDevice.from_single(Device.cpu()),
+            device=ComponentDevice.from_single(
+                Device.gpu() if torch.cuda.is_available() else Device.cpu()
+            ),
         )
 
         document_writer = DocumentWriter(self.__documentStore)

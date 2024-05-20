@@ -1,3 +1,4 @@
+import torch
 from haystack.components.retrievers.in_memory import (
     InMemoryBM25Retriever,
     InMemoryEmbeddingRetriever,
@@ -10,7 +11,6 @@ from haystack.utils import ComponentDevice, Device
 
 
 class RetrieverPipeline(Pipeline):
-
     def __init__(self, textEmbedderModel, rankModel, embeddedDocumentStore):
         super().__init__()
         self.__textEmbedderModel = textEmbedderModel
@@ -21,8 +21,9 @@ class RetrieverPipeline(Pipeline):
 
         text_embedder = SentenceTransformersTextEmbedder(
             model=self.__textEmbedderModel,
-            # device=ComponentDevice.from_str("cuda: 0"),
-            device=ComponentDevice.from_single(Device.cpu()),
+            device=ComponentDevice.from_single(
+                Device.gpu() if torch.cuda.is_available() else Device.cpu()
+            ),
             batch_size=1,
         )
 
