@@ -9,9 +9,11 @@ from pipeline import IndexPipeline, RetrieverPipeline
 from haystack.document_stores.in_memory import InMemoryDocumentStore
 
 
-def fillnan(atts: dict):
-    for k in atts.keys():
-        if np.isnan(atts[k]):
+def fillnan(atts: dict) -> None:
+    for k, v in atts.items():
+        if isinstance(v, str):
+            continue
+        if np.isnan(v):
             print("nan")
             atts[k] = "null"
 
@@ -32,8 +34,6 @@ class SearchEngine3(SearchEngine):
             pprint(item_dict)
         print(res.keys())
 
-        pprint([(k, res[k], res[k].__class__) for k in res])
-
     def search(self, query: str, top_k=5, verbose: Literal[0, 1] = 0):
         self.__retrievePipeline.execute()
 
@@ -53,6 +53,7 @@ class SearchEngine3(SearchEngine):
             stuff.insert(0, ("id", int(origin[i].id)))
             stuff.insert(1, ("content", origin[i].content))
             new_doc_meta = dict(stuff)
+            fillnan(new_doc_meta)
             results.append(new_doc_meta)
         self._verbose(verbose, results)
         return results
