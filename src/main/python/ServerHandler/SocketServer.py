@@ -139,6 +139,7 @@ if __name__ == "__main__":
                 docs=my_db.getAllArticles(),
                 documentStore=InMemoryDocumentStore(),
             )
+
             index.execute()
             retrieve = RetrieverPipeline(
                 textEmbedderModel="sentence-transformers/all-MiniLM-L6-v2",
