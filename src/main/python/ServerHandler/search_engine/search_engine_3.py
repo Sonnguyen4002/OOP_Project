@@ -2,11 +2,11 @@ from typing import Iterable, Literal
 from pprint import pp as pprint
 
 import numpy as np
+from haystack.document_stores.in_memory import InMemoryDocumentStore
 
 from se_interface import SearchEngine
 from blockchain_db import ExcelDB
 from pipeline import IndexPipeline, RetrieverPipeline
-from haystack.document_stores.in_memory import InMemoryDocumentStore
 
 
 def fillnan(atts: dict) -> None:
@@ -36,7 +36,7 @@ class SearchEngine3(SearchEngine):
             pprint(item_dict)
         print(res.keys())
 
-    def search(self, query: str, top_k=5, verbose: Literal[0, 1] = 0):
+    def search(self, query: str, top_k=5, verbose: Literal[0, 1] = 0) -> list[dict]:
         output = self.__retrievePipeline.run(
             {
                 "text_embedder": {"text": query},

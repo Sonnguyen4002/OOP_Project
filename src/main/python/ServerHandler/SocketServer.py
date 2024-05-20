@@ -3,12 +3,12 @@ from threading import Thread
 
 import json
 import pandas as pd
+from haystack.document_stores.in_memory import InMemoryDocumentStore
 
 from search_engine import SearchEngine
 from search_engine import SearchEngine1, SearchEngine2, SearchEngine3
 from search_engine.blockchain_db import ExcelDB
 from search_engine.pipeline import IndexPipeline, RetrieverPipeline
-from haystack.document_stores.in_memory import InMemoryDocumentStore
 
 # Typing
 Socket = socket.socket

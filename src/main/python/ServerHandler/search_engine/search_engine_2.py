@@ -1,8 +1,8 @@
-from se_interface import SearchEngine
-from news_api import NewsCaller
-
 from typing import Iterable, Literal
 from pprint import pp as pprint
+
+from se_interface import SearchEngine
+from news_api import NewsCaller
 
 
 class SearchEngine2(SearchEngine):
@@ -28,7 +28,7 @@ class SearchEngine2(SearchEngine):
             pprint(item_dict)
         print(res.keys())
 
-    def search(self, query: str, top_k=5, verbose: Literal[0, 1] = 0):
+    def search(self, query: str, top_k=5, verbose: Literal[0, 1] = 0) -> list[dict]:
         caller = NewsCaller(query, self._language, self._sort_by, top_k)
         print(len(caller.get_articles()))
         results = [caller.get_single_article_details(idx) for idx in range(top_k)]

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Iterable
 
 
 class SearchEngine(ABC):
@@ -24,7 +25,7 @@ class SearchEngine(ABC):
         pass
 
     @abstractmethod
-    def search(self, query: str, top_k=5, verbose=0) -> list[dict]:
+    def search(self, query: str, top_k=5, verbose=0) -> Iterable[dict]:
         """
          Return a list of dictionaries containing articles's attributes which are
         found after querying.
