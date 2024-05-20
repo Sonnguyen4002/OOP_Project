@@ -1,10 +1,19 @@
 from typing import Iterable, Literal
 from pprint import pp as pprint
 
+import numpy as np
+
 from se_interface import SearchEngine
 from blockchain_db import ExcelDB
 from pipeline import IndexPipeline, RetrieverPipeline
 from haystack.document_stores.in_memory import InMemoryDocumentStore
+
+
+def fillnan(atts: dict):
+    for k in atts.keys():
+        if np.isnan(atts[k]):
+            print("nan")
+            atts[k] = "null"
 
 
 class SearchEngine3(SearchEngine):
@@ -23,6 +32,8 @@ class SearchEngine3(SearchEngine):
             pprint(item_dict)
         print(res.keys())
 
+        pprint([(k, res[k], res[k].__class__) for k in res])
+
     def search(self, query: str, top_k=5, verbose: Literal[0, 1] = 0):
         self.__retrievePipeline.execute()
 
@@ -39,7 +50,7 @@ class SearchEngine3(SearchEngine):
         for i in range(top_k):
             del process[i]["source_id"]
             stuff = list(process[i].items())[:-1]
-            stuff.insert(0, ("id", origin[i].id))
+            stuff.insert(0, ("id", int(origin[i].id)))
             stuff.insert(1, ("content", origin[i].content))
             new_doc_meta = dict(stuff)
             results.append(new_doc_meta)
