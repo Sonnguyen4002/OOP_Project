@@ -1,6 +1,7 @@
-from NewsCaller import NewsCaller
-import csv
 import os
+import csv
+
+from NewsCaller import NewsCaller
 
 
 # Main function

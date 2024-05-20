@@ -1,6 +1,7 @@
-from newsapi import NewsApiClient
-import csv
 import os
+import csv
+
+from newsapi import NewsApiClient
 
 # Initialize News API client
 newsapi = NewsApiClient(api_key="9264da2e99d64499b3175a5029bd6d9a")

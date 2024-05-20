@@ -1,5 +1,6 @@
-from newsapi import NewsApiClient
 from typing import Literal
+
+from newsapi import NewsApiClient
 
 
 class NewsCaller(NewsApiClient):

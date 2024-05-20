@@ -1,7 +1,6 @@
 from typing import Iterable, Literal
 from pprint import pp as pprint
 
-
 import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -54,6 +53,7 @@ class SearchEngine1(SearchEngine):
             if mode == 2:
                 item_dict.update({"similarity": combined_similarity[idx]})
             pprint(item_dict)
+        print(res.keys())
 
     def search(self, query: str, top_k=5, verbose: Literal[0, 1, 2] = 0) -> list[dict]:
         query_embedding = self.__model.encode([query])[0]
