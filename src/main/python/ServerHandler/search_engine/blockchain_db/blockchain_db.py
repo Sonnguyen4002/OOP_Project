@@ -2,8 +2,9 @@ import pandas as pd
 from haystack import Document
 from abc import ABC
 
+
 class BlockchainDB(ABC):
-    def __init__(self, fileDestination, docs = []):
+    def __init__(self, fileDestination, docs=[]):
         self.__fileDestination = fileDestination
         self.__docs = docs
 
@@ -44,14 +45,27 @@ class BlockchainDB(ABC):
             return "Article not found to be deleted!!"
         return
 
+
 class ExcelDB(BlockchainDB):
-    def __init__(self, fileDestination, docs = []):
+    def __init__(self, fileDestination, docs=[]):
         super().__init__(fileDestination, docs)
 
-    def process_data(self, delimiter, engine):
-        df = pd.read_csv(self.getFileDestination(), delimiter = delimiter, engine = engine)
+    def process_data(self, delimiter, engine) -> None:
+        df = pd.read_csv(self.getFileDestination(), delimiter=delimiter, engine=engine)
         kis = list(df.keys())
         vas = [[df.iloc[i][ki] for ki in kis] for i in range(df.shape[0])]
-        new_docs = [Document(content = df.iloc[i]["title"] + ". " + df.iloc[i]["content"],
-                             meta = {ki:va for (ki, va) in zip(kis, vas[i])}) for i in range(df.shape[0])]
+        new_docs = [
+            Document(
+                content=df.iloc[i]["title"] + ". " + df.iloc[i]["content"],
+                meta={ki: va for (ki, va) in zip(kis, vas[i])},
+            )
+            for i in range(df.shape[0])
+        ]
         self.setDocs(new_docs)
+
+
+if __name__ == "__main__":
+    my_db = ExcelDB("./Database/news_change_delimiter.csv")
+    my_db.process_data(delimiter="::", engine="python")
+    a: Document = my_db.getAllArticles()[0]
+    print(a.)

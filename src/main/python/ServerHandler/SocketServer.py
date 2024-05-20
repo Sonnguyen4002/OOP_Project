@@ -1,11 +1,13 @@
 import socket
 from threading import Thread
+
 import json
 import pandas as pd
+
 from search_engine import SearchEngine
 from search_engine import SearchEngine1, SearchEngine2, SearchEngine3
-
-from search_engine import blockchain_db, pipeline
+from search_engine.blockchain_db import ExcelDB
+from search_engine.pipeline import IndexPipeline, RetrieverPipeline
 from haystack.document_stores.in_memory import InMemoryDocumentStore
 
 # Typing
@@ -126,25 +128,22 @@ if __name__ == "__main__":
             database = pd.read_csv(
                 "./Database/news_change_delimiter.csv", delimiter="::", engine="python"
             )
-
             server.set_search_engine(SearchEngine1(database))
         case 2:
             server.set_search_engine(SearchEngine2())
         case 3:
-            my_db = blockchain_db.ExcelDB("./Database/news_change_delimiter.csv")
-            my_db.process_data(delimiter = "::", engine = "python")
-
-            index = pipeline.IndexPipeline(docEmbedderModel= "sentence-transformers/all-MiniLM-L6-v2",
-                                           docs = my_db.getAllArticles,
-                                           documentStore= InMemoryDocumentStore()
-                                           )
-
+            my_db = ExcelDB("./Database/news_change_delimiter.csv")
+            my_db.process_data(delimiter="::", engine="python")
+            index = IndexPipeline(
+                docEmbedderModel="sentence-transformers/all-MiniLM-L6-v2",
+                docs=my_db.getAllArticles(),
+                documentStore=InMemoryDocumentStore(),
+            )
             index.execute()
-
-            retrieve = pipeline.RetrieverPipeline(textEmbedderModel = "sentence-transformers/all-MiniLM-L6-v2",
-                                                  rankModel= "BAAI/bge-reranker-base",
-                                                  embeddedDocumentStore = index.getDocumentStore()
-                                                  )
-
-            server.set_search_engine(SearchEngine3(retrievePipeline= retrieve))
+            retrieve = RetrieverPipeline(
+                textEmbedderModel="sentence-transformers/all-MiniLM-L6-v2",
+                rankModel="BAAI/bge-reranker-base",
+                embeddedDocumentStore=index.getDocumentStore(),
+            )
+            server.set_search_engine(SearchEngine3(retrievePipeline=retrieve))
     server.start(IP, PORT)

@@ -1,8 +1,9 @@
+from haystack import Pipeline
+from haystack.utils import ComponentDevice, Device
 from haystack.components.writers import DocumentWriter
 from haystack.components.embedders import SentenceTransformersDocumentEmbedder
 from haystack.components.preprocessors import DocumentSplitter
-from haystack.utils import ComponentDevice
-from haystack import Pipeline
+
 
 class IndexPipeline(Pipeline):
 
@@ -17,9 +18,16 @@ class IndexPipeline(Pipeline):
 
     def execute(self):
 
-        document_splitter = DocumentSplitter(split_by = "word", split_length = 30, split_overlap=5)
+        document_splitter = DocumentSplitter(
+            split_by="word", split_length=30, split_overlap=5
+        )
 
-        document_embedder = SentenceTransformersDocumentEmbedder(model = self.__docEmbedderModel, batch_size = 5, device = ComponentDevice.from_str("cuda: 0"))
+        document_embedder = SentenceTransformersDocumentEmbedder(
+            model=self.__docEmbedderModel,
+            batch_size=5,
+            # device=ComponentDevice.from_str("cuda: 0"),
+            device=ComponentDevice.from_single(Device.cpu()),
+        )
 
         document_writer = DocumentWriter(self.__documentStore)
 

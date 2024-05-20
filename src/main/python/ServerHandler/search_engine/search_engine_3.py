@@ -1,27 +1,39 @@
-from se_interface import SearchEngine
 from typing import Iterable, Literal
-from ppprint import pp as pprint
+from pprint import pp as pprint
+
+from se_interface import SearchEngine
+from blockchain_db import ExcelDB
+from pipeline import IndexPipeline, RetrieverPipeline
+from haystack.document_stores.in_memory import InMemoryDocumentStore
+
 
 class SearchEngine3(SearchEngine):
-    def __init__(self, retrievePipeline):
+    def __init__(self, retrievePipeline: RetrieverPipeline):
         self.__retrievePipeline = retrievePipeline
 
     def _verbose(self, mode: int, results: Iterable[dict]) -> None:
         if mode == 0:
             return
         for res in results:
-            item_dict = {"id": res["id"],
-                         "content": res["content"][:25] + "...",
-                         "publishDate": res["publishDate"],
-                        }
-            pprint(item_dict)
+            pprint(res)
+            # item_dict = {
+            #     "id": res["id"],
+            #     "content": res["content"][:25] + "...",
+            #     "publishDate": res["publishDate"],
+            # }
+            # pprint(item_dict)
         print(res.keys())
 
-    def search(self, query: str, top_k: int, verbose: Literal[0, 1] = 0):
+    def search(self, query: str, top_k=5, verbose: Literal[0, 1] = 0):
         self.__retrievePipeline.execute()
 
         output = self.__retrievePipeline.run(
-            {"text_embedder": {"text": query}, "bm25_retriever": {"query": query}, "ranker": {"query": query}})
+            {
+                "text_embedder": {"text": query},
+                "bm25_retriever": {"query": query},
+                "ranker": {"query": query},
+            }
+        )
         results = []
         origin = output["ranker"]["documents"][:top_k]
         process = [doc.meta for doc in origin]
@@ -33,3 +45,31 @@ class SearchEngine3(SearchEngine):
             results.append(new_doc_meta)
         self._verbose(verbose, results)
         return results
+
+
+if __name__ == "__main__":
+    print("Importing database")
+    my_db = ExcelDB("./Database/news_change_delimiter.csv")
+    my_db.process_data(delimiter="::", engine="python")
+
+    print("Setting up pipeline")
+    index = IndexPipeline(
+        docEmbedderModel="sentence-transformers/all-MiniLM-L6-v2",
+        docs=my_db.getAllArticles(),
+        documentStore=InMemoryDocumentStore(),
+    )
+    index.execute()
+    retrieve = RetrieverPipeline(
+        textEmbedderModel="sentence-transformers/all-MiniLM-L6-v2",
+        rankModel="BAAI/bge-reranker-base",
+        embeddedDocumentStore=index.getDocumentStore(),
+    )
+
+    print("Initializing search engine")
+    search_engine = SearchEngine3(retrievePipeline=retrieve)
+
+    # Perform search
+    query = "New York crypto news"
+    print(f"Query: {query}")
+    results = search_engine.search(query, verbose=1)
+    print("Done")
