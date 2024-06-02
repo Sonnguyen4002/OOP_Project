@@ -15,9 +15,9 @@ public class CoinDesk extends WebScraper {
 
     @Override
     public void scrapeArticles(List<String> urls, FileWriter csvWriter) throws IOException {
-        if (id == 0) {
-            writeCSVHeader(csvWriter);
-        }
+//        if (id == 0) {
+//            writeCSVHeader(csvWriter);
+//        }
 
         for (String url : urls) {
             scrapeArticle(url, csvWriter);

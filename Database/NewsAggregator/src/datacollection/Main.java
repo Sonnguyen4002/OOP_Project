@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    private static final String CSV_FILE_PATH = "news.csv";
+    private static final String CSV_FILE_PATH = "news_test.csv";
 
     public static void main(String[] args) {
         List<WebScraper> scrapers = new ArrayList<>();
