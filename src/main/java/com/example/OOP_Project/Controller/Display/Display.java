@@ -230,7 +230,8 @@ public abstract class Display {
         pane2.setPrefSize(655, 180);
         pane2.setStyle("-fx-background-color: #020023;");
 
-        ImageView linkImageView = new ImageView(new Image("file:" + link));
+        ImageView linkImageView = new ImageView(link);
+        // ImageView linkImageView = new ImageView(new Image("file:" + link));
         linkImageView.setLayoutX(22);
         linkImageView.setLayoutY(15);
         linkImageView.setFitWidth(170);
