@@ -126,13 +126,13 @@ if __name__ == "__main__":
     match num_input:
         case 1:
             database = pd.read_csv(
-                "./Database/news_change_delimiter.csv", delimiter="::", engine="python"
+                "./Database/database.csv", delimiter="::", engine="python"
             )
             server.set_search_engine(SearchEngine1(database))
         case 2:
             server.set_search_engine(SearchEngine2())
         case 3:
-            my_db = ExcelDB("./Database/news_change_delimiter.csv")
+            my_db = ExcelDB("./Database/database.csv")
             my_db.process_data(delimiter="::", engine="python")
             index = IndexPipeline(
                 docEmbedderModel="sentence-transformers/all-MiniLM-L6-v2",
